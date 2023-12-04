@@ -9,89 +9,86 @@ import warnings
 warnings.filterwarnings("ignore")
 
 if __name__ == '__main__':
-    ## read data
-    df = pd.read_csv('data/housing.csv', sep =',')
-    x = df['lotsize(m^2)']
-    y = df['price']
 
-    ## build model
-    x_with_const = sm.add_constant(x)
-    model = sm.OLS(y,x_with_const).fit()
-    y_pred = model.predict(x_with_const)
+    ## построить модель
+    df = pd.read_csv("data/housing.csv", sep=',')
+    x = df["lotsize(m^2)"]
+    y = df["price"]
 
-    intercept, slope = model.params
-
-    ## show model
-    sb.scatterplot(data=df, x='lotsize(m^2)', y='price')
-    plt.plot(x, y_pred, 'b', label=f'y = {slope:.2f} x + {intercept:.2f}')
-    plt.legend(title='simple regression')
-    plt.show()
-
-
-
-
-
-    ## t-test check 1 TODO1.1
-    print(line.linear_assumption(model, x_with_const, y))
-
-
-
-
-
-    ## t-test check 2 TODO1.2
-    print(line.linear_assumption(model, x_with_const, y, 0.01))
-
-
-
-
-
-    ## confidence interval TODO1.3
-    low_intercept, low_slope = model.conf_int(alpha=0.01)[0]
-    high_intercept, high_slope = model.conf_int(alpha=0.01)[1]
-
-    low_border = low_slope * x + low_intercept
-    high_border = high_slope * x + high_intercept
+    x_c = sm.add_constant(x)
+    model = sm.OLS(y, x_c).fit()
+    y_pred = model.predict(x_c)
 
     sb.scatterplot(data=df, x='lotsize(m^2)', y='price')
     plt.plot(x, y_pred)
-    plt.plot(x, low_border)
-    plt.plot(x, high_border)
-
     plt.show()
 
+    ## 1. Статистическим тестом проверить, удовлетворяет ли модель линейности.
+    print(line.linear_assumption(model, x_c, y))    
 
-
-
-
-    # prediction interval TODO1.4
-    ## prepare plot
-    pred_intervals = model.get_prediction(x_with_const).summary_frame(0.05)
-
-    plt.fill_between(df["lotsize(m^2)"],
-                        pred_intervals["obs_ci_lower"],
-                        pred_intervals["obs_ci_upper"],
-                        color='b',
-                        alpha=.1)
-    sb.scatterplot(data=df, x='lotsize(m^2)', y='price') ## всю исходную дату
-    plt.plot(x, y_pred) ## график предсказания
-    plt.plot(x, low_border) ## нижнюю границу доверительного интервала
-    plt.plot(x, high_border) ## верхнюю границу доверительного интревала
-
-    ## init min_lotsize independent variable frame
-    lotsize = 450
-    lotsize_with_const = sm.add_constant([0, lotsize])
-    ## inti value frame in model and take it summary
-    pred_intervals = model.get_prediction(lotsize_with_const).summary_frame(0.05)
+    ## 2. Проверить, удовлетворяет ли модель линейности с уровнем доверия 99%.
+    print(line.linear_assumption(model, x_c, y, 0.01))
     
-    ## get values from predicted interval frame
-    lotsize_mean = pred_intervals['mean'][1]
-    lotsize_obs_ci_lower = pred_intervals['obs_ci_lower'][1]
-    lotsize_obs_ci_upper = pred_intervals['obs_ci_upper'][1]
+    ## 3. Нарисовать наихудший и наилучший случаи (верхнюю и нижнюю границу 
+    ## регрессионной линии) с уровнем доверия 99%.
+    low_slope, high_slope = model.conf_int(0.01).iloc[1]
+    low_intercept, high_intercept = model.conf_int(0.01).iloc[0]
 
-    ## draw results on plot
-    plt.plot(lotsize, lotsize_mean, '.')
-    plt.plot(lotsize, lotsize_obs_ci_lower, '.')
-    plt.plot(lotsize, lotsize_obs_ci_upper, '.')
+    y_pred_low = low_slope * x + low_intercept
+    y_pred_high = high_slope * x + high_intercept
+
+    sb.scatterplot(data=df, x='lotsize(m^2)', y='price')
+    plt.plot(x, y_pred)
+    plt.plot(x, y_pred_low, 'g--')
+    plt.plot(x, y_pred_high, 'r--')
 
     plt.show()
+
+    ## 4. Если покупатель хочет купить дом с участком площадью 120 м², 
+    # рассчитать минимальную сумму, которую ему придется потратить на покупку дома. 
+    # Нарисовать такой дом на графике. Рассчитать интервал доверия с уровнем доверия 99%.
+        
+    alpha = 0.01
+        ## regression line and data points
+    sb.scatterplot(data=df, x='lotsize(m^2)', y='price')
+    plt.plot(x, y_pred)
+
+        ## conf interval 
+        # (в каком диапазоне лежит изменение y с вероятностью alpha)
+    low_slope, high_slope = model.conf_int(alpha).iloc[1]
+    low_intercept, high_intercept = model.conf_int(alpha).iloc[0]
+
+    y_pred_low = low_slope * x + low_intercept
+    y_pred_high = high_slope * x + high_intercept
+
+    sb.scatterplot(data=df, x='lotsize(m^2)', y='price')
+    plt.plot(x, y_pred)
+    plt.plot(x, y_pred_low, 'g--')
+    plt.plot(x, y_pred_high, 'r--')
+
+        ## pred interval
+        # (интервал доверия для каждого предсказания) 
+        # (для кажлого xi определяем между какими значениями лежит yi)
+    pred_intervals = model.get_prediction(x_c).summary_frame(alpha)
+    plt.fill_between(df['lotsize(m^2)'],
+                pred_intervals['obs_ci_lower'],
+                pred_intervals['obs_ci_upper'],
+                color='b',
+                alpha=.1)
+
+        ## prediction of house with 120m^2
+    lotsize = 120
+    lotsize_c = sm.add_constant([0, lotsize])
+    lotsize_c_pred_interval = model.get_prediction(lotsize_c).summary_frame(alpha)
+
+    mean_lotsize_pred = lotsize_c_pred_interval['mean'][1]
+    low_lotsize_pred = lotsize_c_pred_interval['obs_ci_lower'][1]
+    high_lotsize_pred = lotsize_c_pred_interval['obs_ci_upper'][1]
+
+    plt.plot(lotsize, mean_lotsize_pred, '.', color='b')
+    plt.plot(lotsize, low_lotsize_pred, '.', color='r')
+    plt.plot(lotsize, high_lotsize_pred, '.', color='g')
+
+    plt.show()
+
     pass

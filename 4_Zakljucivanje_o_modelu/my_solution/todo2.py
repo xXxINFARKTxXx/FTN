@@ -25,6 +25,15 @@ if __name__ == '__main__':
     model = sm.OLS(y, x_c).fit()
     y_pred = model.predict(x_c)
 
+        ## create pred interval
+    pred_intervals = model.get_prediction(x_c).summary_frame(alpha)
+    print(pred_intervals)
+    plt.fill_between(df['Lat'],
+                     pred_intervals['obs_ci_lower'],
+                     pred_intervals['obs_ci_upper'],
+                     color='b',
+                     alpha=.1)
+    
         ## according to latitude we have normal results
     ns_lat = 45.2396
     ns_lat_c = sm.add_constant([0, ns_lat])
@@ -61,6 +70,14 @@ if __name__ == '__main__':
     model = sm.OLS(y, x_c).fit()
     y_pred = model.predict(x_c)
 
+            ## create pred interval
+    pred_intervals = model.get_prediction(x_c).summary_frame(alpha)
+    plt.fill_between(df['Lat'],
+                     pred_intervals['obs_ci_lower'],
+                     pred_intervals['obs_ci_upper'],
+                     color='b',
+                     alpha=.1)
+
         ## according to longitude we have abnormal results
     ns_long = 19.8227
     ns_long_c = sm.add_constant([0, ns_long])
@@ -87,7 +104,7 @@ if __name__ == '__main__':
     print('\n')
         ## non valid because our selection too small and 
         # we have not enough data in neighbourhood close to longitude 19.8227 degr
-
+        # no linear dependence mort(long)
 
     ###############################################################################
     ## 3. Согласно регрессионной модели, существует ли уровень смертности 
@@ -101,6 +118,14 @@ if __name__ == '__main__':
     x_c = sm.add_constant(x)
     model = sm.OLS(y, x_c).fit()
     y_pred = model.predict(x_c)
+
+            ## create pred interval
+    pred_intervals = model.get_prediction(x_c).summary_frame(alpha)
+    plt.fill_between(df['Lat'],
+                     pred_intervals['obs_ci_lower'],
+                     pred_intervals['obs_ci_upper'],
+                     color='b',
+                     alpha=.1)
 
         ## 3.2 according to latitude we have abnormal results
     north_pole_lat = 90.
@@ -130,5 +155,3 @@ if __name__ == '__main__':
         ## 3. fin result
         # non valid because our selection too small and 
         # we have not enough data in neighbourhood close to latitude 90 degr
-
-    pass

@@ -12,4 +12,4 @@ cmake-build-debug/
 *.sln
 *.vcxproj*
 0_ignored/
-
+.gitignore

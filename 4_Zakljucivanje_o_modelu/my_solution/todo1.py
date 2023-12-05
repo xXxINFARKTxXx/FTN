@@ -70,6 +70,7 @@ if __name__ == '__main__':
         # (интервал доверия для каждого предсказания) 
         # (для кажлого xi определяем между какими значениями лежит yi)
     pred_intervals = model.get_prediction(x_c).summary_frame(alpha)
+    print(pred_intervals)
     plt.fill_between(df['lotsize(m^2)'],
                 pred_intervals['obs_ci_lower'],
                 pred_intervals['obs_ci_upper'],

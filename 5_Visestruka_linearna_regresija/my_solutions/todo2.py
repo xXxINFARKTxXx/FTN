@@ -21,4 +21,31 @@ def get_fitted_model(x, y):
     return model
 
 if __name__ == '__main__':
+    alpha = 0.01
+    df = pd.read_csv("data/housing.csv", sep=',')
+    
+    x = df.drop(columns="price")
+    y = df["price"]
+
+    x_train, x_val, y_train, y_val = train_test_split(x, y, train_size=0.9,
+                                                      shuffle=True,
+                                                      random_state=42)
+
+    x_train_c = sm.add_constant(x_train)
+    model = sm.OLS(y_train, x_train_c).fit()
+
+    columns_list = x_train_c.columns.tolist()
+    i = 0
+    while ( i < len(columns_list) ):
+        elem = columns_list[i]
+        if alpha <= model.pvalues[elem]:
+            x_train_c = x_train_c.drop(columns=elem)
+            model = sm.OLS(y_train, x_train_c).fit()
+            columns_list = x_train_c.columns.tolist()
+            i = 0
+            continue
+        i += 1
+
+    print(model.summary())
+    are_assumptions_satisfied(model, x_train_c, y_train, alpha)
     pass

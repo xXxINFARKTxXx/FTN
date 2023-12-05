@@ -7,12 +7,11 @@ import statsmodels.api as sm
 from statsmodels.regression.linear_model import RegressionResultsWrapper
 from sklearn.linear_model import LinearRegression    
 
-
 matplotlib.rcParams['figure.figsize'] = (8, 4)
 sb.set(font_scale=1.)
 
 def calculate_residuals(model, features, labels):
-    '''Calculates residuals between true value `labels` and predicted value.'''
+    '''Рассчитывает остатки между реальным значением `labels` и предсказанным значением.'''
     y_pred = model.predict(features)
     df_results = pd.DataFrame({'Actual': labels, 'Predicted': y_pred})
     df_results['Residuals'] = abs(df_results['Actual']) - abs(df_results['Predicted'])
@@ -21,16 +20,16 @@ def calculate_residuals(model, features, labels):
 
 def linear_assumption(model: LinearRegression| RegressionResultsWrapper, features: np.ndarray|pd.DataFrame, labels: pd.Series, p_value_thresh=0.05, plot=True):
     '''
-    Linear assumption: assumees linear relation between the independent and dependent variables to be linear.
-    Testing linearity using the F-test.
+    Линейное предположение: предполагает линейную связь между независимыми и зависимыми переменными.
+    Тестирование линейности с использованием F-теста.
 
-    Interpretation of `p-value`:
-    - `p-value >= p_value_thresh` indicates linearity between.
-    - `p-value < p_value_thresh` doesn't indicate linearity.
+    Интерпретация значения `p-value`:
+    - `p-value >= p_value_thresh` указывает на линейность.
+    - `p-value < p_value_thresh` не указывает на линейность.
 
-    Returns (only if the model is from `statsmodels` not from `scikit-learn`):
-    - is_linearity_found: A boolean indicating whether the linearity assumption is supported by the data.
-    - p_value: The p-value obtained from the linearity test.
+    Возвращает (только если модель из `statsmodels`, а не из `scikit-learn`):
+    - is_linearity_found: Логическое значение, указывающее, поддерживают ли данные предположение о линейности.
+    - p_value: Значение p-value, полученное из теста линейности.
     '''
     df_results = calculate_residuals(model, features, labels)
     y_pred = df_results['Predicted']
@@ -41,9 +40,9 @@ def linear_assumption(model: LinearRegression| RegressionResultsWrapper, feature
         # x = y line
         line_coords = np.linspace(np.concatenate([labels, y_pred]).min(), np.concatenate([labels, y_pred]).max())
         plt.plot(line_coords, line_coords, color='darkorange', linestyle='--')
-        plt.title('Linear assumption')
-        plt.xlabel('Actual')
-        plt.ylabel('Predicted')
+        plt.title('Линейное предположение')
+        plt.xlabel('Фактическое значение')
+        plt.ylabel('Предсказанное значение')
         plt.show()
 
     if type(model) == RegressionResultsWrapper:
@@ -56,18 +55,18 @@ def linear_assumption(model: LinearRegression| RegressionResultsWrapper, feature
 
 def independence_of_errors_assumption(model, features, labels, plot=True):
     '''
-    Independence of errors: assumes independent errors. 
-    Assumes that there is no autocorrelation in the residuals. 
-    Testing autocorrelation using Durbin-Watson Test.
+    Предположение об независимости ошибок: предполагает независимость ошибок.
+    Предполагает отсутствие автокорреляции в остатках.
+    Тестирование автокорреляции с использованием теста Дарбина-Уотсона.
     
-    Interpretation of `d` value:
-    - 1.5 <= d <= 2: No autocorrelation (independent residuals).
-    - d < 1.5: Positive autocorrelation.
-    - d > 2: Negative autocorrelation.
+    Интерпретация значения `d`:
+    - 1.5 <= d <= 2: Нет автокорреляции (независимые остатки).
+    - d < 1.5: Положительная автокорреляция.
+    - d > 2: Отрицательная автокорреляция.
 
-    Returns:
-    - autocorrelation: The type of autocorrelation ('positive', 'negative', or None).
-    - dw_value: The Durbin-Watson statistic value.
+    Возвращает:
+    - autocorrelation: Тип автокорреляции ('positive', 'negative' или None).
+    - dw_value: Значение статистики Дарбина-Уотсона.
     '''
     df_results = calculate_residuals(model, features, labels)
 
@@ -88,20 +87,20 @@ def independence_of_errors_assumption(model, features, labels, plot=True):
 
 def normality_of_errors_assumption(model, features, label, p_value_thresh=0.05, plot=True):
     '''
-    Normality of errors: assumes normally distributed residuals around zero.
-    Testing using the Anderson-Darling test for normal distribution on residuals.
-    Interpretation of `p-value`:
-    - `p-value >= p_value_thresh` indicates normal distribution.
-    - `p-value < p_value_thresh` indicates non-normal distribution.
+    Предположение о нормальности ошибок: предполагает нормально распределенные остатки вокруг нуля.
+    Тестирование с использованием теста Андерсона-Дарлинга на нормальное распределение остатков.
+    Интерпретация значения `p-value`:
+    - `p-value >= p_value_thresh` указывает на нормальное распределение.
+    - `p-value < p_value_thresh` указывает на ненормальное распределение.
 
-    Returns:
-    - dist_type: A string indicating the distribution type ('normal' or 'non-normal').
-    - p_value: The p-value from the Anderson-Darling test.
+    Возвращает:
+    - dist_type: Строка, указывающая тип распределения ('normal' или 'non-normal').
+    - p_value: Значение p-value из теста Андерсона-Дарлинга.
     '''
     df_results = calculate_residuals(model, features, label)
     
     if plot:
-        plt.title('Distribution of residuals')
+        plt.title('Распределение остатков')
         sb.histplot(df_results['Residuals'], kde=True, kde_kws={'cut':3})
         plt.show()
 
@@ -113,16 +112,18 @@ def normality_of_errors_assumption(model, features, label, p_value_thresh=0.05, 
 
 def equal_variance_assumption(model, features, labels, p_value_thresh=0.05, plot=True):
     '''
-    Equal variance: assumes that residuals have equal variance across the regression line.
-    Testing equal variance using Goldfeld-Quandt test.
+    Предположение о равной дисперсии: предполагает, что остатки имеют равную дисперсию по всей линии регрессии.
+    Тестирование равенства дисперсии с использованием теста Гольдфельда-Квандта.
     
-    Interpretation of `p-value`:
-    - `p-value >= p_value_thresh` indicates equal variance.
-    - `p-value < p_value_thresh` indicates non-equal variance.
+    Интерпретация значения `p-value`:
+    - `p-value >= p_value_thresh` указывает на равенство дисперсии.
+    - `p-value < p_value_thresh` указывает на неравенство дисперсии.
 
-    Returns:
-    - dist_type: A string indicating the distribution type ('eqal' or 'non-eqal').
-    - p_value: The p-value from the Goldfeld-Quandt test.
+    Возвращает:
+    - dist_type: С
+
+трока, указывающая тип распределения ('равная' или 'неравная').
+    - p_value: Значение p-value из теста Гольдфельда-Квандта.
     '''
     df_results = calculate_residuals(model, features, labels)
 
@@ -134,23 +135,23 @@ def equal_variance_assumption(model, features, labels, p_value_thresh=0.05, plot
     if type(model) == LinearRegression:
         features = sm.add_constant(features)
     p_value =  sm.stats.het_goldfeldquandt(df_results['Residuals'], features)[1]
-    dist_type = 'equal' if p_value >= p_value_thresh else 'non-equal'
+    dist_type = 'равная' if p_value >= p_value_thresh else 'неравная'
     return dist_type, p_value
 
 
 def perfect_collinearity_assumption(features: pd.DataFrame, plot=True):
     '''
-    Perfect collinearity: assumes no perfect correlation between two or more features.
-    Testing perfect collinearity between exactly two features using correlation matrix.
+    Предположение о совершенной коллинеарности: предполагает отсутствие совершенной корреляции между двумя или более признаками.
+    Тестирование совершенной коллинеарности между ровно двумя признаками с использованием матрицы корреляции.
 
-    Returns:
-    - `has_perfect_collinearity`: A boolean indicating if perfect collinearity was found.
+    Возвращает:
+    - `has_perfect_collinearity`: Булевое значение, указывающее, найдена ли совершенная коллинеарность.
     '''
-    correlation_matrix = features.corr() # racunamo matricu korelacije
+    correlation_matrix = features.corr() # вычисляем матрицу корреляции
 
     if plot:
         sb.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.1)
-        plt.title('Matrica korelacije')
+        plt.title('Матрица корреляции')
         plt.show()
     
     np.fill_diagonal(correlation_matrix.values, np.nan)

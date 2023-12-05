@@ -4,20 +4,46 @@ from sklearn.model_selection import train_test_split
 
 import line_pretpostavke as line
 
-def are_assumptions_satisfied(model, x, y, p_value_thresh=0.01):
-    print(line.linear_assumption(model, x, y,
-                                  p_value_thresh=p_value_thresh, plot=False))
-    
-    print(line.normality_of_errors_assumption(model, x, y,
-                                               p_value_thresh=p_value_thresh, plot=False))
+def are_assumptions_satisfied(model, x, y, p_value_thresh=0.01, 
+                              plot_=False, ret_checks=False, ret_nums=False):
+    results = []
+    num_res = []
 
-    print(line.independence_of_errors_assumption(model, x, y, plot=False))
-    
-    print(line.equal_variance_assumption(model, x, y,
-                                          p_value_thresh=p_value_thresh, plot=False))
-    
-    print(line.perfect_collinearity_assumption(x, plot=False))
-    pass
+    tmp1, tmp2 = line.linear_assumption(model, x, y,
+                                  p_value_thresh=p_value_thresh, plot=plot_)
+    results.append(tmp1)
+    num_res.append(tmp2)
+
+    tmp1, tmp2 = line.normality_of_errors_assumption(model, x, y,
+                                               p_value_thresh=p_value_thresh, plot=plot_)
+    results.append(tmp1)
+    num_res.append(tmp2)
+
+    tmp1, tmp2 = line.independence_of_errors_assumption(model, x, y, plot=plot_)
+    results.append(tmp1)
+    num_res.append(tmp2)
+
+    tmp1, tmp2 = line.equal_variance_assumption(model, x, y,
+                                          p_value_thresh=p_value_thresh, plot=plot_)
+    results.append(tmp1)
+    num_res.append(tmp2)
+
+    tmp1 = line.perfect_collinearity_assumption(x, plot=plot_)
+    results.append(tmp1)
+
+    ret_val = []
+    if results == [True, 'normal', None, 'equal', False]:
+        ret_val.append(True)
+    else:
+        ret_val.append(False)
+
+    if ret_checks:
+        ret_val.append(results)
+
+    if ret_nums:
+        ret_val.append(num_res)
+
+    return ret_val
 
 
 if __name__ == '__main__':

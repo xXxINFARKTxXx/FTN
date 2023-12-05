@@ -1,6 +1,7 @@
 import pandas as pd
 import statsmodels.api as sm
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score
 
 from todo1 import are_assumptions_satisfied
 
@@ -20,8 +21,14 @@ def get_fitted_model(x, y):
     model = sm.OLS(y, x_with_const).fit()
     return model
 
+def fit_and_get_rsquared_adj_test(x_train, x_test, y_train, y_test):
+    '''pomoćna funkcija koja vraca fitovan model i prilagodjeni r^2 nad test skupom.'''
+    model = get_fitted_model(x_train, y_train)
+    adj_r2 = get_rsquared_adj(model, x_test, y_test)
+    return model, adj_r2
+
 if __name__ == '__main__':
-    alpha = 0.01
+    alpha = 0.05
     df = pd.read_csv("data/housing.csv", sep=',')
     
     x = df.drop(columns="price")
@@ -33,8 +40,11 @@ if __name__ == '__main__':
 
     x_train_c = sm.add_constant(x_train)
     model = sm.OLS(y_train, x_train_c).fit()
+    
+    print(model.summary())
 
     columns_list = x_train_c.columns.tolist()
+    dropped_columns = []
     i = 0
     while ( i < len(columns_list) ):
         elem = columns_list[i]
@@ -43,11 +53,13 @@ if __name__ == '__main__':
             model = sm.OLS(y_train, x_train_c).fit()
             columns_list = x_train_c.columns.tolist()
             i = 0
+            dropped_columns.append(elem)
             continue
         i += 1
 
     print(model.summary())
     are_assumptions_satisfied(model, x_train_c, y_train, alpha)
-    
-    ## privet vovanu
-    pass
+
+    x_val = x_val.drop(columns=dropped_columns)
+
+    print(get_rsquared_adj(model, x_val, y_val))

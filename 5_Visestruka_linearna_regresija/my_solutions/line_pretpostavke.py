@@ -135,7 +135,7 @@ def equal_variance_assumption(model, features, labels, p_value_thresh=0.05, plot
     if type(model) == LinearRegression:
         features = sm.add_constant(features)
     p_value =  sm.stats.het_goldfeldquandt(df_results['Residuals'], features)[1]
-    dist_type = 'равная' if p_value >= p_value_thresh else 'неравная'
+    dist_type = 'equal' if p_value >= p_value_thresh else 'non-equal'
     return dist_type, p_value
 
 

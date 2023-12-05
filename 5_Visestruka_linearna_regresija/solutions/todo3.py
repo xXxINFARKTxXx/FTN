@@ -6,7 +6,7 @@ from todo1 import are_assumptions_satisfied
 from todo2 import fit_and_get_rsquared_adj_test, get_rsquared_adj
 
 if __name__ == '__main__':
-    df = pd.read_csv('../data/skincancer.csv', sep=',')
+    df = pd.read_csv('data/skincancer.csv', sep=',')
     x = df.drop(columns=['Mort', 'State'])
     y = df['Mort']
     x_train, x_val, y_train, y_val = train_test_split(x, y, train_size=0.8, shuffle=True, random_state=42)

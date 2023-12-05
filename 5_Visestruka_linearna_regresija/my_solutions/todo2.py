@@ -48,4 +48,6 @@ if __name__ == '__main__':
 
     print(model.summary())
     are_assumptions_satisfied(model, x_train_c, y_train, alpha)
+    
+    ## privet vovanu
     pass

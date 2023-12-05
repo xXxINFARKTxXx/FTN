@@ -46,14 +46,13 @@ if __name__ == '__main__':
 
     x_val_amer = x_val_amer.drop(columns=dropped_columns)
 
-    # print(model.summary())
-    # are_assumptions_satisfied(model, x_train_amer_c, y_train_amer, alpha)
+    print(model.summary())
+    print(are_assumptions_satisfied(model, x_train_amer_c, y_train_amer, alpha), '\n')
 
     x_eur = df_europe.drop(columns=["Mort", 'State'] + dropped_columns)
     y_eur = df_europe['Mort']
 
-    print('\n\n',get_rsquared_adj(model, x_eur, y_eur))
-    print(are_assumptions_satisfied(model, sm.add_constant(x_eur), y_eur, alpha))
+    print(get_rsquared_adj(model, x_eur, y_eur))
 
     x_train_eur, x_val_eur, y_train_eur, y_val_eur = train_test_split(x_eur, y_eur, 
                                                     train_size=train_part,
@@ -66,18 +65,9 @@ if __name__ == '__main__':
 
     model_new = sm.OLS(y_global_train, x_global_train_c).fit()
 
-    # print(model_new.summary())
-
-    print(are_assumptions_satisfied(model_new, x_global_train_c, y_global_train, alpha, ret_checks=True))
+    print(model_new.summary())
+    print(are_assumptions_satisfied(model_new, x_global_train_c, y_global_train, alpha))
     print("old amer: ", get_rsquared_adj(model, x_val_amer, y_val_amer))
     print("old eur: ", get_rsquared_adj(model, x_val_eur, y_val_eur))
     print("new amer ", get_rsquared_adj(model_new, x_val_amer, y_val_amer))
     print("new eur ", get_rsquared_adj(model_new, x_val_eur, y_val_eur))
-
-    # fig = plt.figure()
-    # ax = fig.add_subplot(projection='3d')
-
-    # for i in range(len(x_global_train_c)):
-    #     ocean = 
-    #     lat = 
-    #     mort = 

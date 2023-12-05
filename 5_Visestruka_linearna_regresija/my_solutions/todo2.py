@@ -28,15 +28,17 @@ def fit_and_get_rsquared_adj_test(x_train, x_test, y_train, y_test):
     return model, adj_r2
 
 if __name__ == '__main__':
-    alpha = 0.05
+    alpha = 0.01
+    random_st = 42
+    train_part = 0.9
     df = pd.read_csv("data/housing.csv", sep=',')
     
     x = df.drop(columns="price")
     y = df["price"]
 
-    x_train, x_val, y_train, y_val = train_test_split(x, y, train_size=0.9,
+    x_train, x_val, y_train, y_val = train_test_split(x, y, train_size=train_part,
                                                       shuffle=True,
-                                                      random_state=42)
+                                                      random_state=random_st)
 
     x_train_c = sm.add_constant(x_train)
     model = sm.OLS(y_train, x_train_c).fit()
@@ -58,7 +60,7 @@ if __name__ == '__main__':
         i += 1
 
     print(model.summary())
-    are_assumptions_satisfied(model, x_train_c, y_train, alpha)
+    print(are_assumptions_satisfied(model, x_train_c, y_train, alpha))
 
     x_val = x_val.drop(columns=dropped_columns)
 

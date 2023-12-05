@@ -7,8 +7,10 @@ from todo2 import fit_and_get_rsquared_adj_test, get_rsquared_adj
 
 if __name__ == '__main__':
         ## consts
-    alpha = 0.05
+    alpha = 0.01
     train_part = 0.8
+    rand_stat = 42
+        ## import data frame
     df_europe = pd.read_csv("data/skincancer_europe.csv")
     df_amerika = pd.read_csv("data/skincancer.csv")
 
@@ -18,7 +20,7 @@ if __name__ == '__main__':
     x_train_amer, x_val_amer, y_train_amer, y_val_amer = train_test_split(x_amer, y_amer, 
                                                       train_size=train_part,
                                                       shuffle=True,
-                                                      random_state=42)
+                                                      random_state=rand_stat)
     
     x_train_amer_c = sm.add_constant(x_train_amer)
     model = sm.OLS(y_train_amer, x_train_amer_c).fit()
@@ -49,5 +51,4 @@ if __name__ == '__main__':
     x_eur_c = sm.add_constant(x_eur)
     y_eur = df_europe['Mort']
 
-    print('\n\n',get_rsquared_adj(model, x_eur, y_eur))
-    print(are_assumptions_satisfied(model, x_eur_c, y_eur, alpha))
+    print(get_rsquared_adj(model, x_eur, y_eur))

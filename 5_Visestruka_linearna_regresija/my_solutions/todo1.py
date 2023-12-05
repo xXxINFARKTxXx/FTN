@@ -60,7 +60,7 @@ if __name__ == '__main__':
     model = sm.OLS(y_train,x_train_c).fit()
     y_pred_train = model.predict(x_train_c)
 
-    are_assumptions_satisfied(model, x_train_c, y_train,
-                              p_value_thresh=0.01)
+    print(are_assumptions_satisfied(model, x_train_c, y_train,
+                              p_value_thresh=0.01))
 
     pass

@@ -12,7 +12,7 @@ def fit_and_get_rsquared_adj_test(x_train, x_test, y_train, y_test):
 
 
 if __name__ == '__main__':
-    # 1. Izbacuje sve redove kojima nedostaje vrednost.
+    # 1. Удаляет все строки с отсутствующими значениями.
     df = pd.read_csv('data/missing_data_housing.csv', sep=',') 
     df = df.dropna()
     
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     model, adj_r2 = fit_and_get_rsquared_adj_test(x_train, x_val, y_train, y_val)
     print(adj_r2) # 0.29
 
-    # 2. Izbacuje atribut `stories`, a atribut `lotsize(m^2)` popunjava srednjom vrednošću.
+    # 2. Удаляет атрибут `stories`, а атрибут `lotsize(m^2)` заполняет средним значением.
     df = pd.read_csv('data/missing_data_housing.csv', sep=',') 
     df = df.drop(columns='stories')
     df = fillna_mean(df, col_name='lotsize(m^2)')
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     model, adj_r2 = fit_and_get_rsquared_adj_test(x_train, x_val, y_train, y_val)
     print(adj_r2) # 0.38
 
-    # 3. Nedostajuće vrednosti popunjava kubnim splajnom.
+    # 3. Заполняет отсутствующие значения кубическим сплайном.
     df = pd.read_csv('data/missing_data_housing.csv', sep=',') 
     
     df['lotsize(m^2)'] = df['lotsize(m^2)'].interpolate(method='spline', order=3, limit_direction='both')
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     model, adj_r2 = fit_and_get_rsquared_adj_test(x_train, x_val, y_train, y_val)
     print(adj_r2) # 0.65
 
-    # 4. Nedostajuce vrednosti atributa `stories` popunjava linearnim splajnom. Ostale nedostajuce vrednosti popunjava kubnim splajnom.
+    # 4. Заполняет отсутствующие значения атрибута `stories` линейным сплайном. Остальные отсутствующие значения заполняет кубическим сплайном.
     df = pd.read_csv('data/missing_data_housing.csv', sep=',') 
     
     df['stories'] = df['stories'].interpolate(method='linear', limit_direction='both')
@@ -53,5 +53,5 @@ if __name__ == '__main__':
     model, adj_r2 = fit_and_get_rsquared_adj_test(x_train, x_val, y_train, y_val)
     print(adj_r2) # 0.66
 
-    # NOTE: zaključujemo da je najbolji poslednji model, gde se koristi linearni splajn za `stories`
-    # i kubni splajn za `lotsize(m^2)`
+    # NOTE: заключаем, что лучшая модель - последняя, где используется линейный сплайн для `stories`
+    # и кубический сплайн для `lotsize(m^2)`

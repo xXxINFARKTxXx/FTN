@@ -221,3 +221,46 @@ def visualize_column(df, col_name,  df_fixed=None):
     if df_fixed is not None: plt.plot(x, df_fixed[col_name], 'r-', label='fixed')
     plt.legend()
     plt.show()
+
+def my_are_assumptions_satisfied(model, x, y, p_value_thresh=0.01, 
+                              plot_=False, ret_checks=False, ret_nums=False):
+    
+    x = sm.add_constant(x)
+    results = []
+    num_res = []
+
+    tmp1, tmp2 = linear_assumption(model, x, y,
+                                  p_value_thresh=p_value_thresh, plot=plot_)
+    results.append(tmp1)
+    num_res.append(tmp2)
+
+    tmp1, tmp2 = normality_of_errors_assumption(model, x, y,
+                                               p_value_thresh=p_value_thresh, plot=plot_)
+    results.append(tmp1)
+    num_res.append(tmp2)
+
+    tmp1, tmp2 = independence_of_errors_assumption(model, x, y, plot=plot_)
+    results.append(tmp1)
+    num_res.append(tmp2)
+
+    tmp1, tmp2 = equal_variance_assumption(model, x, y,
+                                          p_value_thresh=p_value_thresh, plot=plot_)
+    results.append(tmp1)
+    num_res.append(tmp2)
+
+    tmp1 = perfect_collinearity_assumption(x, plot=plot_)
+    results.append(tmp1)
+
+    ret_val = []
+    if results == [True, 'normal', None, 'equal', False]:
+        ret_val.append(True)
+    else:
+        ret_val.append(False)
+
+    if ret_checks:
+        ret_val.append(results)
+
+    if ret_nums:
+        ret_val.append(num_res)
+
+    return ret_val

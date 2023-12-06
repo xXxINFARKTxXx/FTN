@@ -27,7 +27,7 @@ if __name__ == '__main__':
     model_1 = get_fitted_model(x_1_train, y_1_train)
     print("1: ")
     print("Tests: ", 
-          my_are_assumptions_satisfied(model_1, x_1_train, y_1_train, ## random_state= 42 : True
+          my_are_assumptions_satisfied(model_1, x_1_train, y_1_train, ## random_state=29 : True
                                                  p_value_thresh=alpha, ret_checks=True),
           are_assumptions_satisfied(model_1, x_1_train, y_1_train, p_value_thresh=alpha))
     print("Adj. r^2: ",get_rsquared_adj(model_1, x_1_val, y_1_val))
@@ -50,12 +50,12 @@ if __name__ == '__main__':
     model_2 = get_fitted_model(x_2_train, y_2_train)
     print("2: ")
     print("Tests: ", 
-          my_are_assumptions_satisfied(model_2, x_2_train, y_2_train, ## random_state=101 : True
+          my_are_assumptions_satisfied(model_2, x_2_train, y_2_train, ## random_state=29 : True
                                                  p_value_thresh=alpha, ret_checks=True),
           are_assumptions_satisfied(model_2, x_2_train, y_2_train, p_value_thresh=alpha)) 
     print("Adj. r^2: ", get_rsquared_adj(model_2, x_2_val, y_2_val))
 
-    # 3. Nedostajuće vrednosti popunjava kubnim splajnom. ## 167
+    # 3. Nedostajuće vrednosti popunjava kubnim splajnom.
     
         ## fix NANs
     df_3 = df.copy()
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     model_3 = get_fitted_model(x_3_train, y_3_train)
     print("3: ")
     print("Tests: ", 
-          my_are_assumptions_satisfied(model_3, x_3_train, y_3_train, ## random_state=51 : True
+          my_are_assumptions_satisfied(model_3, x_3_train, y_3_train, ## random_state=29 : True
                                                  p_value_thresh=alpha, ret_checks=True),
           are_assumptions_satisfied(model_3, x_3_train, y_3_train, p_value_thresh=alpha))
     print("Adj. r^2: ", get_rsquared_adj(model_3, x_3_val, y_3_val))
@@ -96,7 +96,8 @@ if __name__ == '__main__':
     model_4 = get_fitted_model(x_4_train, y_4_train)
     print("4: ")
     print("Tests: ", 
-          my_are_assumptions_satisfied(model_4, x_4_train, y_4_train, ## random_state=51 : True
+          my_are_assumptions_satisfied(model_4, x_4_train, y_4_train, ## random_state=29 : True
                                               p_value_thresh=alpha, ret_checks=True), 
           are_assumptions_satisfied(model_4, x_4_train, y_4_train, p_value_thresh=alpha))
     print("Adj. r^2: ", get_rsquared_adj(model_4, x_4_val, y_4_val))
+    print(model_4.summary())
